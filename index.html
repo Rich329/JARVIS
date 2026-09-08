@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>JARVIS — Holographic Assistant</title>
+<style>
+:root{--cyan:#19dfff;--blue:#1687ff;--bg:#020914;--panel:rgba(3,20,38,.78);--text:#d9f7ff}
+*{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at 50% 45%,#06365b 0,#020914 42%,#01050b 100%);color:var(--text);font-family:Arial,sans-serif;min-height:100vh;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:linear-gradient(rgba(25,223,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(25,223,255,.025) 1px,transparent 1px);background-size:35px 35px}
+header{height:78px;border-bottom:1px solid rgba(25,223,255,.45);display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:rgba(0,10,20,.72);backdrop-filter:blur(12px)}
+.logo{font-size:30px;letter-spacing:7px;font-weight:700;color:white}.sub{font-size:11px;letter-spacing:3px;color:#8bdff2;margin-top:3px}
+.top{font-size:12px;color:#83dff2;letter-spacing:2px}
+.grid{display:grid;grid-template-columns:270px 1fr 360px;gap:18px;padding:20px;max-width:1500px;margin:auto}
+.panel{border:1px solid rgba(25,223,255,.55);background:var(--panel);box-shadow:0 0 25px rgba(0,174,255,.08),inset 0 0 25px rgba(0,174,255,.035);border-radius:12px;padding:16px}
+h3{font-size:14px;letter-spacing:2px;color:var(--cyan);margin:0 0 16px}
+.status{margin:15px 0}.status span{display:flex;justify-content:space-between;font-size:12px;margin-bottom:7px}.bar{height:5px;background:#0b2d45;border-radius:8px;overflow:hidden}.bar i{display:block;height:100%;width:38%;background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.quick{display:grid;grid-template-columns:1fr 1fr;gap:9px}.quick button,.suggest{background:rgba(3,35,58,.8);color:var(--text);border:1px solid rgba(25,223,255,.4);padding:12px;border-radius:8px;cursor:pointer}.quick button:hover,.suggest:hover{border-color:var(--cyan);box-shadow:0 0 15px rgba(25,223,255,.18)}
+.center{min-height:680px;display:flex;align-items:center;justify-content:center;position:relative}.core{width:min(48vw,460px);height:min(48vw,460px);border-radius:50%;border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;box-shadow:0 0 35px rgba(25,223,255,.35),inset 0 0 45px rgba(25,223,255,.12);position:relative;animation:pulse 3s infinite}.core:before,.core:after{content:"";position:absolute;border:1px solid rgba(25,223,255,.5);border-radius:50%;inset:7%;animation:spin 12s linear infinite}.core:after{inset:-7%;border-style:dashed;animation:spin 18s linear reverse infinite}.coretext{text-align:center;z-index:2}.coretext strong{display:block;font-size:44px;letter-spacing:8px}.state{font-size:12px;letter-spacing:3px;color:#7feaff;margin-top:10px}.chat{height:340px;overflow:auto;font-size:13px;line-height:1.5}.msg{margin:9px 0;padding:10px;border-left:2px solid var(--cyan);background:rgba(0,30,52,.5)}.msg b{color:var(--cyan);font-size:11px;letter-spacing:1px}.inputrow{display:flex;gap:8px;margin-top:12px}.inputrow input{flex:1;background:#03182a;border:1px solid rgba(25,223,255,.45);color:white;border-radius:25px;padding:13px 15px;outline:none}.inputrow button{width:48px;border-radius:50%;border:1px solid var(--cyan);background:#062b43;color:white;cursor:pointer}.mic{margin-top:14px;text-align:center}.mic button{width:90px;height:90px;border-radius:50%;border:2px solid var(--cyan);background:#06243a;color:var(--cyan);font-size:30px;cursor:pointer;box-shadow:0 0 25px rgba(25,223,255,.18)}.mic button.listening{animation:pulse 1s infinite;background:#083c55}.hint{text-align:center;font-size:11px;color:#79b9c9;margin-top:9px}
+@keyframes pulse{50%{box-shadow:0 0 55px rgba(25,223,255,.55),inset 0 0 55px rgba(25,223,255,.2)}}@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}.center{min-height:450px}.core{width:360px;height:360px}}
+</style>
+</head>
+<body>
+<header><div><div class="logo">JARVIS</div><div class="sub">YOUR PERSONAL AI ASSISTANT</div></div><div class="top">ANALYSE • THINK • ASSIST • EXECUTE</div><div id="clock" class="top"></div></header>
+<main class="grid">
+<section>
+<div class="panel"><h3>SYSTEM STATUS</h3>
+<div class="status"><span><label>CPU Usage</label><b>—</b></span><div class="bar"><i style="width:18%"></i></div></div>
+<div class="status"><span><label>Memory</label><b>—</b></span><div class="bar"><i style="width:42%"></i></div></div>
+<div class="status"><span><label>Network</label><b>Connected</b></span><div class="bar"><i style="width:92%"></i></div></div></div>
+<div class="panel" style="margin-top:14px"><h3>QUICK ACCESS</h3><div class="quick">
+<button onclick="run('Search the web')">🌐 Web</button><button onclick="run('Open YouTube')">▶ YouTube</button><button onclick="run('Help me study')">📖 Study</button><button onclick="run('Calculate 25 times 4')">▣ Calc</button></div></div>
+<div class="panel" style="margin-top:14px"><h3>RECENT ACTIVITY</h3><div id="activity" style="font-size:12px;color:#9ed9e8">System ready.</div></div>
+</section>
+<section class="center"><div class="core"><div class="coretext"><strong>JARVIS</strong><div id="state" class="state">STANDBY</div></div></div></section>
+<section>
+<div class="panel"><h3>ASSISTANT</h3><div id="chat" class="chat"><div class="msg"><b>JARVIS</b><br>Systems initialized. Say <b>“Jarvis”</b> after enabling the microphone, or type a command.</div></div>
+<div class="inputrow"><input id="text" placeholder="Type a message or command…"><button onclick="sendText()">➤</button></div></div>
+<div class="panel mic"><h3>VOICE CONTROL</h3><button id="mic" onclick="toggleVoice()">🎙</button><div id="voiceHint" class="hint">Press once to enable wake-word listening.</div></div>
+<div class="panel" style="margin-top:14px"><h3>SUGGESTED COMMANDS</h3><button class="suggest" onclick="run('What can you do?')">What can you do?</button></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let recognition=null, wakeMode=false, commandMode=false;
+function clock(){ $('clock').textContent=new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}); }
+setInterval(clock,1000);clock();
+function add(role,text){const d=document.createElement('div');d.className='msg';d.innerHTML=`<b>${role}</b><br>${escapeHtml(text)}`;$('chat').appendChild(d);$('chat').scrollTop=$('chat').scrollHeight}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function speak(text){if('speechSynthesis' in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.rate=.95;speechSynthesis.speak(u)}}
+function response(t){let x=t.toLowerCase();let r;
+if(x.includes('what can you do')) r='I can accept typed or spoken commands in this V1 interface. More capabilities will be connected in later versions.';
+else if(x.includes('hello')||x.includes('hi')) r='Hello. JARVIS is online and ready.';
+else if(x.includes('study')) r='Study mode is available as a future module. For now, I can receive your study command.';
+else if(x.includes('calculate')) r='Calculator module is not connected yet. The interface is ready for it.';
+else r=`Command received: ${t}. The command engine is ready to be expanded.`;
+add('JARVIS',r);speak(r);$('state').textContent='READY';$('activity').textContent='Last command: '+t;
+}
+function run(t){add('YOU',t);response(t)}
+function sendText(){let v=$('text').value.trim();if(v){$('text').value='';run(v)}}
+$('text').addEventListener('keydown',e=>{if(e.key==='Enter')sendText()});
+function toggleVoice(){
+ if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){alert('Speech recognition is not supported by this browser. Try a supported Chromium-based browser.');return}
+ if(recognition){recognition.stop();recognition=null;wakeMode=false;commandMode=false;$('mic').classList.remove('listening');$('state').textContent='STANDBY';$('voiceHint').textContent='Press once to enable wake-word listening.';return}
+ const R=window.SpeechRecognition||window.webkitSpeechRecognition; recognition=new R(); recognition.continuous=true;recognition.interimResults=false;recognition.lang='en-US';
+ recognition.onresult=e=>{for(let i=e.resultIndex;i<e.results.length;i++){if(!e.results[i].isFinal)continue;let t=e.results[i][0].transcript.trim();let l=t.toLowerCase();
+ if(!commandMode){if(l.includes('jarvis')){commandMode=true;$('state').textContent='LISTENING';$('voiceHint').textContent='Wake word detected. Say your command.';speak('Yes?');}}else{commandMode=false;$('state').textContent='PROCESSING';run(t);$('voiceHint').textContent='Listening for “Jarvis”…';}}};
+ recognition.onerror=e=>{if(e.error==='not-allowed'){$('voiceHint').textContent='Microphone permission was denied.'} };
+ recognition.onend=()=>{if(recognition&&wakeMode){try{recognition.start()}catch(e){}}};
+ wakeMode=true;recognition.start();$('mic').classList.add('listening');$('state').textContent='LISTENING FOR WAKE WORD';$('voiceHint').textContent='Listening for “Jarvis”… Keep this page open.';
+}
+</script>
+</body>
+</html>
